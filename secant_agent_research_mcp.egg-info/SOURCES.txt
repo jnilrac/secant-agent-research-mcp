@@ -1,0 +1,9 @@
+README.md
+pyproject.toml
+server.py
+secant_agent_research_mcp.egg-info/PKG-INFO
+secant_agent_research_mcp.egg-info/SOURCES.txt
+secant_agent_research_mcp.egg-info/dependency_links.txt
+secant_agent_research_mcp.egg-info/entry_points.txt
+secant_agent_research_mcp.egg-info/requires.txt
+secant_agent_research_mcp.egg-info/top_level.txt
