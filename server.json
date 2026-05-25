@@ -1,0 +1,24 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.jnilrac/secant-agent-research-mcp",
+  "title": "Secant Agent Research Pack",
+  "description": "Paid MCP web research for agents: search, extraction, citations, and x402 payment discovery.",
+  "websiteUrl": "https://agentic.secantoutreach.com/agent-research",
+  "repository": {
+    "url": "https://github.com/jnilrac/secant-agent-research-mcp",
+    "source": "github"
+  },
+  "version": "0.1.0",
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://agentic.secantoutreach.com/mcp/"
+    }
+  ],
+  "_meta": {
+    "io.modelcontextprotocol.registry/publisher-provided": {
+      "tool": "mcp-publisher",
+      "source": "x402-dominator-launch"
+    }
+  }
+}
