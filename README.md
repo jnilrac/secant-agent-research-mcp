@@ -1,5 +1,7 @@
 # Secant Agent Research MCP
 
+[![smithery badge](https://smithery.ai/badge/hello-j2mo/secant-agent-research-pack)](https://smithery.ai/servers/hello-j2mo/secant-agent-research-pack)
+
 MCP wrapper for the [Secant Agent Research Pack](https://agentic.secantoutreach.com/agent-research), a paid x402 research API for autonomous agents.
 
 The server exposes tools for:
@@ -27,6 +29,7 @@ docker run --rm -i secant-agent-research-mcp
 ## Canonical Discovery
 
 - Buyer page: <https://agentic.secantoutreach.com/agent-research>
+- Smithery listing: <https://smithery.ai/servers/hello-j2mo/secant-agent-research-pack>
 - x402 manifest: <https://agentic.secantoutreach.com/.well-known/x402.json>
 - OpenAPI: <https://agentic.secantoutreach.com/openapi.yaml>
 - Agent card: <https://agentic.secantoutreach.com/agent-card.json>
