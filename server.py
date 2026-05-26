@@ -1,10 +1,11 @@
 from __future__ import annotations
 
 import os
-from typing import Any
+from typing import Annotated, Any
 
 import httpx
 from fastmcp import FastMCP
+from pydantic import Field
 
 
 DEFAULT_API_BASE_URL = "https://agentic.secantoutreach.com"
@@ -43,12 +44,17 @@ async def _post(path: str, payload: dict[str, Any]) -> dict[str, Any]:
 
 @mcp.tool
 async def search(
-    query: str,
-    max_results: int = 5,
-    payment: dict[str, Any] | None = None,
-    payment_identifier: str | None = None,
+    query: Annotated[str, Field(description="Natural language web search query to run for the agent.")],
+    max_results: Annotated[int, Field(ge=1, le=10, description="Maximum number of ranked search results to return.")] = 5,
+    payment: Annotated[dict[str, Any] | None, Field(description="Optional x402 payment proof returned by the buyer after accepting the 402 payment requirement.")] = None,
+    payment_identifier: Annotated[str | None, Field(description="Optional idempotency key/payment identifier used to retry safely without rerunning expensive work.")] = None,
 ) -> dict[str, Any]:
-    """Run paid ranked web search, or return x402 payment requirements if unpaid."""
+    """Run ranked web search for autonomous agents.
+
+    Unpaid calls return the upstream HTTP 402/x402 payment requirement before
+    execution. Paid retries with a valid payment proof return structured search
+    results from the live Secant Agent Research API.
+    """
     return await _post(
         "/services/search",
         {
@@ -62,13 +68,18 @@ async def search(
 
 @mcp.tool
 async def research_pack(
-    query: str,
-    max_results: int = 5,
-    extract_pages: int = 1,
-    payment: dict[str, Any] | None = None,
-    payment_identifier: str | None = None,
+    query: Annotated[str, Field(description="Research question or search query for the workflow.")],
+    max_results: Annotated[int, Field(ge=1, le=10, description="Maximum number of ranked search results to include.")] = 5,
+    extract_pages: Annotated[int, Field(ge=0, le=5, description="Number of top-ranked result pages to extract for readable text and citations.")] = 1,
+    payment: Annotated[dict[str, Any] | None, Field(description="Optional x402 payment proof returned by the buyer after accepting the 402 payment requirement.")] = None,
+    payment_identifier: Annotated[str | None, Field(description="Optional idempotency key/payment identifier used to retry safely without rerunning expensive work.")] = None,
 ) -> dict[str, Any]:
-    """Run paid search plus page extraction and citations, or return x402 payment requirements if unpaid."""
+    """Run the full paid research workflow: search, extraction, JSON, and citations.
+
+    Use this when an agent needs a compact source-backed research packet rather
+    than raw search results. Unpaid calls return x402 payment terms; paid retries
+    return normalized results and extraction details.
+    """
     return await _post(
         "/services/research-pack",
         {
@@ -83,11 +94,16 @@ async def research_pack(
 
 @mcp.tool
 async def extract_page(
-    urls: list[str],
-    payment: dict[str, Any] | None = None,
-    payment_identifier: str | None = None,
+    urls: Annotated[list[str], Field(description="One or more absolute page URLs to extract. The live API enforces service limits.")],
+    payment: Annotated[dict[str, Any] | None, Field(description="Optional x402 payment proof returned by the buyer after accepting the 402 payment requirement.")] = None,
+    payment_identifier: Annotated[str | None, Field(description="Optional idempotency key/payment identifier used to retry safely without rerunning expensive work.")] = None,
 ) -> dict[str, Any]:
-    """Extract readable text and metadata from paid page URLs, or return x402 payment requirements if unpaid."""
+    """Extract readable content, metadata, links, and hashes from page URLs.
+
+    Use this when the caller already knows which pages matter and only needs
+    cleaned extraction output. Blocked or failed pages are returned as extraction
+    errors by the upstream API.
+    """
     return await _post(
         "/services/extract",
         {
@@ -100,13 +116,18 @@ async def extract_page(
 
 @mcp.tool
 async def monitor_diff(
-    url: str,
-    previous_hash: str | None = None,
-    previous_text: str | None = None,
-    payment: dict[str, Any] | None = None,
-    payment_identifier: str | None = None,
+    url: Annotated[str, Field(description="Absolute page URL to fetch and compare against prior state.")],
+    previous_hash: Annotated[str | None, Field(description="Optional previous content hash from an earlier extract or diff check.")] = None,
+    previous_text: Annotated[str | None, Field(description="Optional previous readable text to compare with the current page text.")] = None,
+    payment: Annotated[dict[str, Any] | None, Field(description="Optional x402 payment proof returned by the buyer after accepting the 402 payment requirement.")] = None,
+    payment_identifier: Annotated[str | None, Field(description="Optional idempotency key/payment identifier used to retry safely without rerunning expensive work.")] = None,
 ) -> dict[str, Any]:
-    """Check a URL for changes against previous text or hash, or return x402 payment requirements if unpaid."""
+    """Check whether a page changed since a previous hash or text snapshot.
+
+    Use this for lightweight monitoring of docs, pricing pages, competitor
+    pages, status pages, or other URLs an agent revisits. Unpaid calls return
+    x402 payment terms before execution.
+    """
     return await _post(
         "/services/monitor/diff",
         {
